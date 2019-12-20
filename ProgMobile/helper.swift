@@ -27,3 +27,10 @@ struct recommendations {
     let images : Array<NSDictionary>!
     let name : String
 }
+
+struct playlist {
+    let description : String!
+    let id : String!
+    let images : Array<NSDictionary>!
+    let name : String
+}

@@ -25,7 +25,7 @@ class customCollectionViewCell: UICollectionViewCell {
         self.imgaeView.downloaded(from: Image, contentMode: .scaleAspectFill)
         
         self.addSubview(imgaeView)
-        self.addSubview(nom)
+//        self.addSubview(nom)
     }
     
     required init?(coder: NSCoder) {
@@ -36,6 +36,7 @@ class customCollectionViewCell: UICollectionViewCell {
 extension UIImageView {
     func downloaded(from url: URL, contentMode mode: UIView.ContentMode = .scaleAspectFit) {  // for swift 4.2 syntax just use ===> mode: UIView.ContentMode
         contentMode = mode
+        self.alpha = 0
         URLSession.shared.dataTask(with: url) { data, response, error in
             guard
                 let httpURLResponse = response as? HTTPURLResponse, httpURLResponse.statusCode == 200,
@@ -45,6 +46,9 @@ extension UIImageView {
                 else { return }
             DispatchQueue.main.async() {
                 self.image = image
+                UIView.animate(withDuration: 0.2) {
+                    self.alpha = 1
+                }
             }
         }.resume()
     }

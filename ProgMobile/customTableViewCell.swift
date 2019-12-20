@@ -16,6 +16,7 @@ class customTableViewCell: UITableViewCell, UICollectionViewDelegate, UICollecti
     var type = ""
     var newReleaseData : [newReleases]!
     var newRecommendations : [recommendations]!
+    var newPlaylists : [playlist]!
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -56,11 +57,18 @@ class customTableViewCell: UITableViewCell, UICollectionViewDelegate, UICollecti
         //                self.dataDict = response
                     }
                         break
-                case "categories":
-        //            api.getNewReleases { (response) in
-        //                print(response)
-        //                self.dataDict = response
-        //            }
+                case "playlists":
+                                api.getNewPlaylist { (response) in
+                                print(response)
+                                self.newPlaylists = response
+                                self.numberOfRow = response.count
+                                self.collection = FlowViewController(frame: self.bounds, inputType: "playlists")
+                                self.collection.collectionView.delegate = self
+                                self.collection.collectionView.dataSource = self
+                                self.addSubview(self.collection.view)
+                                self.collection.collectionView.reloadData()
+                //                self.dataDict = response
+                            }
                     break
                 default:
                     break
@@ -86,7 +94,8 @@ class customTableViewCell: UITableViewCell, UICollectionViewDelegate, UICollecti
                      cell.setData(Image: ((newReleaseData[indexPath.row].images.first)!.value(forKey: "url"))! as! String, name: newReleaseData[indexPath.row].name)
                         
                         break
-                case "categories":
+                case "playlists":
+                    cell.setData(Image: ((newPlaylists[indexPath.row].images.first)!.value(forKey: "url"))! as! String, name: newPlaylists[indexPath.row].name)
                     break
                 default:
                     break

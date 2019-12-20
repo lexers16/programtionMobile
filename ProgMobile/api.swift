@@ -37,6 +37,30 @@ class apiLooker {
         
     }
     
+    func getNewPlaylist (completion: @escaping (Array<playlist>)->()) {
+        let headers: HTTPHeaders = [
+          "Authorization":"Bearer \(appKey!)"
+        ]
+        AF.request("https://api.spotify.com/v1/browse/featured-playlists", headers: headers)
+            .responseJSON { response in
+                
+                switch response.result {
+
+                case .success(let json):
+                    let JSON = json as? NSDictionary
+                    let id = (JSON!["playlists"] as? NSDictionary)?.value(forKey: "items") as? Array<NSDictionary>
+                    var element = Array<playlist>()
+                    for elements in id! {
+                        element.append(playlist(description: elements.value(forKey: "description") as! String, id: (elements.value(forKey: "id") as! String), images: (elements.value(forKey: "images") as! Array<NSDictionary>), name: elements.value(forKey: "name") as! String))
+                    }
+                        completion(element)
+                case .failure(let error):
+                    print(error)
+                }
+                }
+        
+    }
+    
     func getRecommendations (completion: @escaping (Array<recommendations>)->()) {
         let headers: HTTPHeaders = [
           "Authorization":"Bearer \(appKey!)"

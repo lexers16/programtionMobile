@@ -29,19 +29,12 @@ class ViewController: UITableViewController {
         switch indexPath.row {
             case 0:
                 cell.setCollectionView(type : "newReleases")
-//                let FloWView = FlowViewController(frame: cell.bounds, inputType :"artist")
-//                cell.addSubview(FloWView.view)
             break
             case 1:
                 cell.setCollectionView(type : "Recommandations")
-//                let FloWView = FlowViewController(frame: cell.bounds, inputType :"newReleases")
-////                FloWView.collectionView.reloadData()
-//                cell.addSubview(FloWView.view)
                 break
             case 2:
-//                let FloWView = FlowViewController(frame: cell.bounds, inputType :"categories")
-////                FloWView.collectionView.reloadData()
-//                cell.addSubview(FloWView.view)
+                cell.setCollectionView(type : "playlists")
                 break
             default:
                  cell.backgroundColor = themeColor
@@ -58,7 +51,7 @@ class ViewController: UITableViewController {
         case 1:
             return self.view.frame.height / 3
         case 2:
-            return self.view.frame.height
+            return self.view.frame.height / 3
         default:
              return self.view.frame.height
         }
