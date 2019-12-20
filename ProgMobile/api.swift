@@ -13,7 +13,7 @@ var appKey : String!
 
 class apiLooker {
     
-    func getArtists (completion: @escaping (NSDictionary)->()) {
+    func getNewReleases (completion: @escaping (Array<newReleases>)->()) {
         let headers: HTTPHeaders = [
           "Authorization":"Bearer \(appKey!)"
         ]
@@ -24,14 +24,48 @@ class apiLooker {
 
                 case .success(let json):
                     let JSON = json as? NSDictionary
-                    let id = JSON!["albums"] as? NSDictionary
-                    
-                        completion(id!)
-                    
+                    let id = (JSON!["albums"] as? NSDictionary)?.value(forKey: "items") as? Array<NSDictionary>
+                    var element = Array<newReleases>()
+                    for elements in id! {
+                        element.append(newReleases(artists: (elements.value(forKey: "artists") as! Array<NSDictionary>), markets: (elements.value(forKey: "available_markets") as! Array<String>), links: elements.value(forKey: "external_urls") as? Array<NSDictionary>, id: (elements.value(forKey: "id") as! String), images: (elements.value(forKey: "images") as! Array<NSDictionary>), name: elements.value(forKey: "name") as! String, releaseDate: elements.value(forKey: "release_date") as! String, type: elements.value(forKey: "type") as! String))
+                    }
+                        completion(element)
                 case .failure(let error):
                     print(error)
                 }
                 }
+        
+    }
+    
+    func getRecommendations (completion: @escaping (Array<recommendations>)->()) {
+        let headers: HTTPHeaders = [
+          "Authorization":"Bearer \(appKey!)"
+        ]
+        AF.request("https://api.spotify.com/v1/recommendations?seed_genres=electro", headers: headers)
+            .responseJSON { response in
+                
+                switch response.result {
+
+                case .success(let json):
+                    let JSON = json as? NSDictionary
+                    print(JSON)
+                    let id = JSON!["tracks"] as? Array<NSDictionary>
+                    var element = Array<recommendations>()
+                    for elements in id! {
+                        if elements["album"] != nil {
+                            element.append(recommendations(artists: (elements.value(forKey: "artists") as? Array<NSDictionary>), links: elements.value(forKey: "external_urls") as? Array<NSDictionary>, id: (elements.value(forKey: "id") as? String), images: (elements.value(forKey: "album") as? NSDictionary)?.value(forKey: "images") as! Array<NSDictionary>, name: elements.value(forKey: "name") as? String ?? "null"))
+                            
+                        } else {
+                                                    element.append(recommendations(artists: (elements.value(forKey: "artists") as? Array<NSDictionary>), links: elements.value(forKey: "external_urls") as? Array<NSDictionary>, id: (elements.value(forKey: "id") as? String), images: (elements.value(forKey: "images") as? Array<NSDictionary>), name: elements.value(forKey: "name") as? String ?? "null"))
+                        }
+
+                    }
+                        completion(element)
+                case .failure(let error):
+                    print(error)
+                }
+                }
+        
     }
     
     func getToken (completion: @escaping (Bool)->()) {
@@ -46,7 +80,7 @@ class apiLooker {
             case .success(let json):
                 let JSON = json as? NSDictionary
                 appKey = JSON!["access_token"] as! String
-                
+                print(appKey)
                     completion(true)
                 
             case .failure(let error):
